@@ -50,7 +50,14 @@ exports.addFood = async (req, res) => {
 ========================= */
 exports.updateFood = async (req, res) => {
   try {
-    const food = await foodService.updateFood(req.params.id, req.body);
+    const updateData = { ...req.body };
+
+    // If new image uploaded, update image path
+    if (req.file) {
+      updateData.image = `/uploads/seed/${req.file.filename}`;
+    }
+
+    const food = await foodService.updateFood(req.params.id, updateData);
     res.json(food);
   } catch (error) {
     const statusCode = error.statusCode || 400;

@@ -37,6 +37,15 @@ class FoodService {
      * @returns {Promise<Object>} Created food item
      */
     async createFood(foodData, imagePath, userId) {
+        // Parse addon arrays if they're strings (from FormData)
+        const defaultAddons = typeof foodData.defaultAddons === 'string'
+            ? JSON.parse(foodData.defaultAddons)
+            : (foodData.defaultAddons || []);
+
+        const extraAddons = typeof foodData.extraAddons === 'string'
+            ? JSON.parse(foodData.extraAddons)
+            : (foodData.extraAddons || []);
+
         const food = await Food.create({
             name: foodData.name,
             subtitle: foodData.subtitle,
@@ -45,6 +54,8 @@ class FoodService {
             type: foodData.type,
             category: foodData.category,
             image: imagePath,
+            defaultAddons,
+            extraAddons,
             createdBy: userId
         });
         return food;
@@ -57,6 +68,15 @@ class FoodService {
      * @returns {Promise<Object>} Updated food item
      */
     async updateFood(foodId, updateData) {
+        // Parse addon arrays if they're strings (from FormData)
+        if (updateData.defaultAddons && typeof updateData.defaultAddons === 'string') {
+            updateData.defaultAddons = JSON.parse(updateData.defaultAddons);
+        }
+
+        if (updateData.extraAddons && typeof updateData.extraAddons === 'string') {
+            updateData.extraAddons = JSON.parse(updateData.extraAddons);
+        }
+
         const food = await Food.findByIdAndUpdate(
             foodId,
             updateData,
