@@ -1,11 +1,11 @@
-const Food = require("../models/Food");
+const foodService = require("../services/food.service");
 
 /* =========================
    GET ALL FOODS (PUBLIC)
 ========================= */
 exports.getAllFoods = async (req, res) => {
   try {
-    const foods = await Food.find({ isAvailable: true });
+    const foods = await foodService.getAllFoods();
     res.json(foods);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch foods" });
@@ -18,10 +18,7 @@ exports.getAllFoods = async (req, res) => {
 exports.getFoodsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const foods = await Food.find({
-      category,
-      isAvailable: true
-    });
+    const foods = await foodService.getFoodsByCategory(category);
     res.json(foods);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch foods" });
@@ -33,20 +30,18 @@ exports.getFoodsByCategory = async (req, res) => {
 ========================= */
 exports.addFood = async (req, res) => {
   try {
-    const food = await Food.create({
-      name: req.body.name,
-      subtitle: req.body.subtitle,
-      basePrice: req.body.basePrice,
-      calories: req.body.calories,
-      type: req.body.type,
-      category: req.body.category,
-      image: `/uploads/seed/${req.file.filename}`,
-      createdBy: req.user._id
-    });
-
+    const imagePath = `/uploads/seed/${req.file.filename}`;
+    const food = await foodService.createFood(
+      req.body,
+      imagePath,
+      req.user._id
+    );
     res.status(201).json(food);
   } catch (error) {
-    res.status(400).json({ message: "Failed to add food" });
+    const statusCode = error.statusCode || 400;
+    res.status(statusCode).json({
+      message: error.message || "Failed to add food"
+    });
   }
 };
 
@@ -55,15 +50,13 @@ exports.addFood = async (req, res) => {
 ========================= */
 exports.updateFood = async (req, res) => {
   try {
-    const food = await Food.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
+    const food = await foodService.updateFood(req.params.id, req.body);
     res.json(food);
   } catch (error) {
-    res.status(400).json({ message: "Failed to update food" });
+    const statusCode = error.statusCode || 400;
+    res.status(statusCode).json({
+      message: error.message || "Failed to update food"
+    });
   }
 };
 
@@ -72,9 +65,12 @@ exports.updateFood = async (req, res) => {
 ========================= */
 exports.deleteFood = async (req, res) => {
   try {
-    await Food.findByIdAndDelete(req.params.id);
-    res.json({ message: "Food deleted successfully" });
+    const result = await foodService.deleteFood(req.params.id);
+    res.json(result);
   } catch (error) {
-    res.status(400).json({ message: "Failed to delete food" });
+    const statusCode = error.statusCode || 400;
+    res.status(statusCode).json({
+      message: error.message || "Failed to delete food"
+    });
   }
 };

@@ -1,81 +1,25 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const foodSchema = new mongoose.Schema(
-  {
-    /* =========================
-       BASIC INFO
-    ========================== */
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    },
+const addonSchema = new mongoose.Schema({
+  id: { type: Number, required: true },
+  name: { type: String, required: true },
+  price: { type: Number, required: true }
+});
 
-    subtitle: {
-      type: String,
-      default: "Healthy • Fresh • Protein-rich"
-    },
-
-    description: {
-      type: String,
-      default: ""
-    },
-
-    /* =========================
-       PRICING
-    ========================== */
-    basePrice: {
-      type: Number,
-      required: true,
-      min: 0
-    },
-
-    calories: {
-      type: Number,
-      default: 0
-    },
-
-    /* =========================
-       FOOD TYPE (FILTERS)
-    ========================== */
-    type: {
-      type: String,
-      enum: ["veg", "egg", "nonveg"],
-      required: true
-    },
-
-    category: {
-      type: String,
-      default: "sprouts"
-    },
-
-    /* =========================
-       IMAGE
-    ========================== */
-    image: {
-      type: String,
-      required: true
-    },
-
-    /* =========================
-       STATUS
-    ========================== */
-    isAvailable: {
-      type: Boolean,
-      default: true
-    },
-
-    /* =========================
-       ADMIN META
-    ========================== */
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
+const foodSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  subtitle: { type: String, required: true },
+  basePrice: { type: Number, required: true },
+  calories: { type: Number, required: true },
+  type: { 
+    type: String, 
+    enum: ['veg', 'egg', 'nonveg'], 
+    required: true 
   },
-  {
-    timestamps: true
-  }
-);
+  category: { type: String, required: true },
+  image: { type: String, required: true },
+  defaultAddons: [addonSchema],  // Free addons
+  extraAddons: [addonSchema]     // Premium addons
+}, { timestamps: true });
 
-module.exports = mongoose.model("Food", foodSchema);
+module.exports = mongoose.model('Food', foodSchema);

@@ -2,8 +2,8 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const User = require("../models/User");
-const Food = require("../models/Food"); // optional, if exists
+const User = require("../src/models/User");
+const Food = require("../src/models/Food"); // optional, if exists
 
 const MONGO_URI = process.env.MONGO_URI;
 
