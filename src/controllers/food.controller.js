@@ -40,7 +40,7 @@ exports.addFood = async (req, res) => {
       calories: req.body.calories,
       type: req.body.type,
       category: req.body.category,
-      image: `/uploads/foods/${req.file.filename}`,
+      image: `/uploads/seed/${req.file.filename}`,
       createdBy: req.user._id
     });
 
