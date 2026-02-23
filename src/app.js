@@ -1,26 +1,59 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
 const path = require("path");
+const passport = require("./config/passport");
+const session = require("express-session");
 
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "../uploads"))
-);
+const app = express();
 
-app.use(cors());
+// CORS
+app.use(cors({
+  origin: ['http://localhost:4200', 'http://localhost:4000'],
+  credentials: true
+}));
+
+// Static files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Body parsing
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Meal-to-Heal API running");
-});
+// Session (needed for Passport)
+app.use(session({
+  secret: process.env.JWT_SECRET || 'meal-to-heal-secret',
+  resave: false,
+  saveUninitialized: false
+}));
 
+// Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
 const authRoutes = require("./routes/auth.routes");
-app.use("/api/auth", authRoutes);
-
 const foodRoutes = require("./routes/food.routes");
+const chatRoutes = require("./routes/chat.routes");
+const orderRoutes = require("./routes/order.routes");
+const cartRoutes = require("./routes/cart.routes");
+const addressRoutes = require("./routes/address.routes");
+const userRoutes = require("./routes/user.routes");
+const mapplsRoutes = require("./routes/mapplsRoutes");
+const carouselRoutes = require("./routes/carousel.routes");
 
-app.use("/api/foods", foodRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/food", foodRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/addresses", addressRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/mappls", mapplsRoutes);
+app.use("/api/carousel", carouselRoutes);
 
+// Health check
+app.get("/", (req, res) => {
+  res.json({ message: "Meal-to-Heal API running" });
+});
 
 module.exports = app;
