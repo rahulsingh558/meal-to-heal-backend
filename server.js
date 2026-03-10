@@ -12,7 +12,11 @@ const server = http.createServer(app);
 // Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:4200', 'http://localhost:4000'],
+    origin: [
+      'http://localhost:4200', 
+      'http://localhost:4000',
+      process.env.CLIENT_URL // Production frontend URL
+    ].filter(Boolean),
     methods: ['GET', 'POST'],
     credentials: true
   }

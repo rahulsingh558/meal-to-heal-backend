@@ -6,9 +6,22 @@ const session = require("express-session");
 
 const app = express();
 
+// Default CORS origin
+const allowedOrigins = [
+  'http://localhost:4200', 
+  'http://localhost:4000',
+  process.env.CLIENT_URL // Add production frontend URL from environment
+].filter(Boolean); // removes undefined if CLIENT_URL is not set
+
 // CORS
 app.use(cors({
-  origin: ['http://localhost:4200', 'http://localhost:4000'],
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
