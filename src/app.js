@@ -10,6 +10,8 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:4200', 
   'http://localhost:4000',
+  'https://meals4heal.in',
+  'https://www.meals4heal.in',
   process.env.CLIENT_URL // Add production frontend URL from environment
 ].filter(Boolean); // removes undefined if CLIENT_URL is not set
 
